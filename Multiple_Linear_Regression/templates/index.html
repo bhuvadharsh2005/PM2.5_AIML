@@ -1,0 +1,300 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>AirSense | PM2.5 Predictor</title>
+
+    <link
+        rel="stylesheet"
+        href="{{ url_for('static', filename='style.css') }}"
+    >
+</head>
+
+<body>
+    <div class="background-glow glow-one"></div>
+    <div class="background-glow glow-two"></div>
+
+    <div class="page">
+        <header class="hero">
+            <div class="brand">
+                <span class="brand-dot"></span>
+                AirSense ML
+            </div>
+
+            <h1>
+                Predict PM2.5 with
+                <span>Multiple Linear Regression</span>
+            </h1>
+
+            <p>
+                Enter current air-quality and weather measurements.
+                Our trained regression pipeline will estimate the
+                corresponding PM2.5 concentration.
+            </p>
+        </header>
+
+        <main class="application-grid">
+            <section class="information-card">
+                <div class="card-label">
+                    HOW IT WORKS
+                </div>
+
+                <h2>From measurements to prediction</h2>
+
+                <p class="card-description">
+                    The application sends seven measurements through
+                    the same scaler and regression model used during
+                    training.
+                </p>
+
+                <div class="process-list">
+                    <div class="process-item">
+                        <span class="process-number">1</span>
+
+                        <div>
+                            <strong>Enter measurements</strong>
+                            <p>
+                                Provide pollutant and weather values.
+                            </p>
+                        </div>
+                    </div>
+
+                    <div class="process-item">
+                        <span class="process-number">2</span>
+
+                        <div>
+                            <strong>Standardize inputs</strong>
+                            <p>
+                                The saved scaler transforms every value.
+                            </p>
+                        </div>
+                    </div>
+
+                    <div class="process-item">
+                        <span class="process-number">3</span>
+
+                        <div>
+                            <strong>Predict PM2.5</strong>
+                            <p>
+                                Linear regression calculates the result.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+
+                {% if metrics %}
+                    <div class="metric-grid">
+                        <div class="metric">
+                            <span>Model MAE</span>
+                            <strong>
+                                {{ "%.2f"|format(metrics.mae) }}
+                            </strong>
+                        </div>
+
+                        <div class="metric">
+                            <span>Model RMSE</span>
+                            <strong>
+                                {{ "%.2f"|format(metrics.rmse) }}
+                            </strong>
+                        </div>
+
+                        <div class="metric">
+                            <span>Model R²</span>
+                            <strong>
+                                {{ "%.3f"|format(metrics.r2) }}
+                            </strong>
+                        </div>
+                    </div>
+                {% endif %}
+            </section>
+
+            <section class="prediction-card">
+                <div class="card-label">
+                    LIVE PREDICTION
+                </div>
+
+                <h2>Enter measurement values</h2>
+
+                <form method="POST">
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label for="pm10">PM10</label>
+
+                            <div class="input-container">
+                                <input
+                                    id="pm10"
+                                    name="pm10"
+                                    type="number"
+                                    step="any"
+                                    min="0"
+                                    value="{{ form_values.get('pm10', '') }}"
+                                    placeholder="120"
+                                    required
+                                >
+                                <span>µg/m³</span>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="no2">
+                                Nitrogen Dioxide
+                            </label>
+
+                            <div class="input-container">
+                                <input
+                                    id="no2"
+                                    name="no2"
+                                    type="number"
+                                    step="any"
+                                    min="0"
+                                    value="{{ form_values.get('no2', '') }}"
+                                    placeholder="35"
+                                    required
+                                >
+                                <span>µg/m³</span>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="so2">
+                                Sulphur Dioxide
+                            </label>
+
+                            <div class="input-container">
+                                <input
+                                    id="so2"
+                                    name="so2"
+                                    type="number"
+                                    step="any"
+                                    min="0"
+                                    value="{{ form_values.get('so2', '') }}"
+                                    placeholder="10"
+                                    required
+                                >
+                                <span>µg/m³</span>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="co">
+                                Carbon Monoxide
+                            </label>
+
+                            <div class="input-container">
+                                <input
+                                    id="co"
+                                    name="co"
+                                    type="number"
+                                    step="any"
+                                    min="0"
+                                    value="{{ form_values.get('co', '') }}"
+                                    placeholder="1.2"
+                                    required
+                                >
+                                <span>mg/m³</span>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="ozone">Ozone</label>
+
+                            <div class="input-container">
+                                <input
+                                    id="ozone"
+                                    name="ozone"
+                                    type="number"
+                                    step="any"
+                                    min="0"
+                                    value="{{ form_values.get('ozone', '') }}"
+                                    placeholder="25"
+                                    required
+                                >
+                                <span>µg/m³</span>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="humidity">
+                                Relative Humidity
+                            </label>
+
+                            <div class="input-container">
+                                <input
+                                    id="humidity"
+                                    name="humidity"
+                                    type="number"
+                                    step="any"
+                                    min="0"
+                                    max="100"
+                                    value="{{ form_values.get('humidity', '') }}"
+                                    placeholder="65"
+                                    required
+                                >
+                                <span>%</span>
+                            </div>
+                        </div>
+
+                        <div class="form-group full-width">
+                            <label for="wind_speed">
+                                Wind Speed
+                            </label>
+
+                            <div class="input-container">
+                                <input
+                                    id="wind_speed"
+                                    name="wind_speed"
+                                    type="number"
+                                    step="any"
+                                    min="0"
+                                    max="50"
+                                    value="{{ form_values.get('wind_speed', '') }}"
+                                    placeholder="2.5"
+                                    required
+                                >
+                                <span>m/s</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <button type="submit">
+                        Predict PM2.5
+                        <span>→</span>
+                    </button>
+                </form>
+
+                {% if error_message %}
+                    <div class="message error-message">
+                        {{ error_message }}
+                    </div>
+                {% endif %}
+
+                {% if prediction is not none %}
+                    <div class="prediction-result">
+                        <p>Estimated PM2.5 concentration</p>
+
+                        <div class="prediction-number">
+                            {{ "%.2f"|format(prediction) }}
+                            <span>µg/m³</span>
+                        </div>
+
+                        <small>
+                            Prediction generated by the saved
+                            multiple linear regression pipeline.
+                        </small>
+                    </div>
+                {% endif %}
+            </section>
+        </main>
+
+        <footer>
+            PM2.5 prediction project · Multiple Linear Regression
+        </footer>
+    </div>
+</body>
+</html>

@@ -1,0 +1,12 @@
+services:
+  - type: web
+    name: ml-pm25-predictor
+    env: python
+    region: oregon
+    plan: free
+    rootDir: Multiple_Linear_Regression
+    buildCommand: "pip install -r requirements.txt"
+    startCommand: "gunicorn app:app --workers 2 --threads 4 --timeout 60"
+    envVars:
+      - key: PYTHON_VERSION
+        value: 3.11.0

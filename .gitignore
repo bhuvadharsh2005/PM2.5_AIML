@@ -1,0 +1,9 @@
+ml_env/
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.env
+.DS_Store
+Multiple_Linear_Regression/__pycache__/
+Simple_Linear_Regression/__pycache__/
